@@ -1,10 +1,10 @@
 # OFC 2026 ML Challenge: Sequence Transformer Solution
 
-This repository contains the Sequence Transformer solution for the **OFC 2026 Machine Learning Challenge**. The model is designed to predict EDFA gain profiles with high precision, utilizing multi-scale tokens and local unloaded context.
+This repository contains the Sequence Transformer solution for the **OFC 2026 Machine Learning Challenge**. The model is designed to predict EDFA gain profiles with high precision utilizing multi-scale tokens.
 
 ## Overview
 
-The solution employs a Transformer-based architecture to process channel spectra and EDFA parameters. Key features include:
+The solution employs a Transformer-based architecture to process input power spectra and EDFA parameters. Key features include:
 - **Sequence Modeling**: Treating the 95-channel spectrum as a sequence.
 - **Ensemble Learning**: Combining multiple models with different seeds for robust predictions.
 - **Two-Stage Training**: Utilizing both broad datasets (COSMOS) and competition-specific data.
