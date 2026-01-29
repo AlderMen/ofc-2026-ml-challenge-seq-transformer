@@ -1,12 +1,12 @@
 """
-OFC 2026 ML Challenge: Sequence Transformer (v3)
+OFC 2026 ML Challenge: Sequence Transformer
 Solution for EDFA Gain Profile Prediction
 
 This script implements a Transformer-based sequence model to predict EDFA gain profiles
 from input spectra and device parameters. It includes features like multi-scale token 
 pooling, local attention masking, and ensemble training.
 
-Authors: Koopman Lab
+Authors: IPOC
 Date: Jan 2026
 """
 
