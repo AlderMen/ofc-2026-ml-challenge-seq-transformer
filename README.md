@@ -1,1 +1,1 @@
-# ofc-2026-ml-challenge-seq-transformer
+# ofc-2026-ml-challenge-IPOC
