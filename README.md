@@ -40,7 +40,7 @@ ofc-ml-challenge-data-code-main/
 ```
 
 ## How to Run
-### 1. Reproduce Results with Pre-trained Models (Recom
+### 1. Reproduce Results with Pre-trained Models
 
 We provide the pre-trained ensemble models (5 members) in the `best_model/` directory. To generate the submission CSV using these weights, run:
 
