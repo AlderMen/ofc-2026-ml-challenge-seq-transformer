@@ -63,7 +63,7 @@ python main.py --train --predict --amp --save_best `
 ## Methodology
 
 ### Model Architecture
-The `SeqTransformerV3` uses a `TransformerEncoder` to capture inter-channel dependencies. It incorporates global and optional pooled segment tokens to aggregate spectral information.
+The `SeqTransformer` uses a `TransformerEncoder` to capture inter-channel dependencies. It incorporates global and optional pooled segment tokens to aggregate spectral information.
 
 ### Loss Function
 We support standard Mean Squared Error (MSE) and a custom `kaggle_proxy` loss that optimizes for the competition's evaluation metrics (MAE, Std, and P95 error).
