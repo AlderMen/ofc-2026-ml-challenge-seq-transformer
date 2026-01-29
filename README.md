@@ -40,8 +40,16 @@ ofc-ml-challenge-data-code-main/
 ```
 
 ## How to Run
+### 1. Reproduce Results with Pre-trained Models (Recom
 
-To run the full pipeline (Training + Prediction) as configured for our submission:
+We provide the pre-trained ensemble models (5 members) in the `best_model/` directory. To generate the submission CSV using these weights, run:
+
+```powershell
+python main.py --predict --out_dir ./best_model --tag best_model --ensemble --n_ensemble 5 --residual_from_target
+```
+The output will be saved in `best_model/submissions/submission_best_model.csv`.
+
+### 2. Full Pipeline (Training + Prediction)
 
 ### PowerShell (Windows)
 
