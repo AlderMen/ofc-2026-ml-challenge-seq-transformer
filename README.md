@@ -73,5 +73,4 @@ We support standard Mean Squared Error (MSE) and a custom `kaggle_proxy` loss th
 This project is licensed under the MIT License - see the LICENSE file for details (to be added).
 
 ## Acknowledgments
-- Koopman Lab
 - OFC 2026 ML Challenge Organizers
