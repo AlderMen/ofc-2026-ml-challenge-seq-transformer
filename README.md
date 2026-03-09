@@ -1,84 +1,104 @@
 # OFC 2026 ML Challenge: Sequence Transformer Solution
 
-This repository contains the Sequence Transformer solution for the **OFC 2026 Machine Learning Challenge**. The model is designed to predict EDFA gain profiles with high precision utilizing multi-scale tokens.
-
-## Overview
-
-The solution employs a Transformer-based architecture to process input power spectra and EDFA parameters. Key features include:
-- **Sequence Modeling**: Treating the 95-channel spectrum as a sequence.
-- **Ensemble Learning**: Combining multiple models with different seeds for robust predictions.
-- **Two-Stage Training**: Utilizing both broad datasets (COSMOS) and competition-specific data.
-- **Residual Prediction**: Predicting gains relative to target priors for improved stability.
+**Team:** IPOC  
+**Task:** EDFA Gain Profile Prediction (95-channel spectral gain)
 
 ## Repository Structure
 
-- `main.py`: The core script for training and inference.
-- `requirements.txt`: List of required Python packages.
-- `run_pipeline.ps1`: PowerShell script to execute the full training and prediction pipeline.
-- `.gitignore`: Standard patterns to exclude from version control.
+```
+.
+├── main.py                          # Training & inference script
+├── requirements.txt                 # Python dependencies
+├── best_model/
+│   ├── checkpoints/
+│   │   ├── best_model_0.pth         # Ensemble member 0
+│   │   ├── best_model_1.pth         # Ensemble member 1
+│   │   ├── best_model_2.pth         # Ensemble member 2
+│   │   ├── best_model_3.pth         # Ensemble member 3
+│   │   └── best_model_4.pth         # Ensemble member 4
+│   └── scalers/
+│       └── best_model.npz           # Standardizer + model config
+└── README.md
+```
 
-## Installation
+## Prerequisites
 
-Ensure you have Python 3.8+ installed. Install the dependencies using pip:
+- Python 3.8+
+- Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Data Preparation
+## Inference (Reproduce Submission)
 
-Place the competition data in the following structure (or update the paths in `main.py`):
+### Quick Start
 
-```text
+The simplest way to run inference on new test data:
+
+```bash
+python main.py --predict \
+    --out_dir ./best_model \
+    --tag best_model \
+    --ensemble --n_ensemble 5 \
+    --test_csv /path/to/test_features.csv \
+    --output_csv ./submission.csv
+```
+
+**Arguments:**
+
+| Argument | Description |
+|---|---|
+| `--predict` | Run inference only (no training) |
+| `--out_dir ./best_model` | Directory containing model weights and scalers |
+| `--tag best_model` | Model tag (matches checkpoint/scaler filenames) |
+| `--ensemble --n_ensemble 5` | Use 5-member ensemble averaging |
+| `--test_csv <path>` | Path to the new `test_features.csv` |
+| `--output_csv <path>` | Where to write the submission CSV |
+
+### Alternative: Default Data Path
+
+If you place the test data at the default location, `--test_csv` can be omitted:
+
+```
 ofc-ml-challenge-data-code-main/
   Features/
-    Train/
-      train_features.csv
-      train_labels.csv
     Test/
       test_features.csv
 ```
 
-## How to Run
-### 1. Reproduce Results with Pre-trained Models
-
-We provide the pre-trained ensemble models (5 members) in the `best_model/` directory. To generate the submission CSV using these weights, run:
-
-```powershell
-python main.py --predict --out_dir ./best_model --tag best_model --ensemble --n_ensemble 5 --residual_from_target
-```
-The output will be saved in `best_model/submissions/submission_best_model.csv`.
-
-### 2. Full Pipeline (Training + Prediction)
-
-### PowerShell (Windows)
-
-```powershell
-./run_pipeline.ps1
+```bash
+python main.py --predict --out_dir ./best_model --tag best_model --ensemble --n_ensemble 5
 ```
 
-### Manual Command
+Output will be saved to `best_model/submissions/submission_best_model.csv`.
 
-```powershell
-python main.py --train --predict --amp --save_best `
-  --out_dir ./runs/seqtf_v3/run_residual --tag run_residual `
-  --n_ensemble 5 --ensemble `
-  --attn_mode pad_unloaded `
-  --cosmos_max 10000 --train_mode two_stage `
-  --residual_from_target
-```
+### Expected Input Format
 
-## Methodology
+The input `test_features.csv` must be a Kaggle-format CSV with columns:
 
-### Model Architecture
-The `SeqTransformer` uses a `TransformerEncoder` to capture inter-channel dependencies. It incorporates global and optional pooled segment tokens to aggregate spectral information.
+- `ID` (integer)
+- `EDFA_input_spectra_00` ... `EDFA_input_spectra_94` (95 input channels)
+- `DUT_WSS_activated_channel_index_00` ... `DUT_WSS_activated_channel_index_94` (95 mask channels)
+- `target_gain`, `target_gain_tilt`, `EDFA_input_power_total`, `EDFA_output_power_total`
+- `EDFA_type`, `edfa_index`, `Category` (optional)
 
-### Loss Function
-We support standard Mean Squared Error (MSE) and a custom `kaggle_proxy` loss that optimizes for the competition's evaluation metrics (MAE, Std, and P95 error).
+### Expected Output Format
+
+The output CSV follows Kaggle submission format:
+
+- `ID` (integer)
+- `calculated_gain_spectra_00` ... `calculated_gain_spectra_94` (95 predicted gain values in dB)
+
+## Model Details
+
+- **Architecture:** Transformer Encoder (d_model=256, depth=8, nhead=8, dim_ff=768)
+- **Ensemble:** 5 models with different random seeds, predictions averaged
+- **Training strategy:** Two-stage — pretrain on full dataset (Kaggle + COSMOS), finetune on Kaggle-only data
+- **Residual prediction:** Model predicts residual relative to target gain prior
+- **Attention masking:** Unloaded channels masked (`pad_unloaded` mode)
+- All model configuration is automatically loaded from `best_model/scalers/best_model.npz` at inference time; no manual parameter specification is needed.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-- OFC 2026 ML Challenge Organizers
+MIT License — see LICENSE file for details.
